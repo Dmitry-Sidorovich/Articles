@@ -1,6 +1,6 @@
 ﻿namespace Articles.Contracts.Articles;
 
-public class UpdateArticleDto
+public class UpdateArticleDto : CreateArticleDto
 {
     
 }

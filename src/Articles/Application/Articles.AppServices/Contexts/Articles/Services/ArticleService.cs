@@ -27,7 +27,7 @@ public class ArticleService : IArticleService
         throw new NotImplementedException();
     }
 
-    public Task<ArticleDto> UpdateAsync(Guid id, CreateArticleDto article)
+    public Task<ArticleDto> UpdateAsync(Guid id, UpdateArticleDto article)
     {
         throw new NotImplementedException();
     }
