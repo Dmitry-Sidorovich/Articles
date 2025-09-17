@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Articles.AppServices.Contexts.Articles.Services;
+﻿using Articles.AppServices.Contexts.Articles.Services;
 using Articles.Contracts.Articles;
 using Articles.Contracts.Errors;
 using Microsoft.AspNetCore.Mvc;
