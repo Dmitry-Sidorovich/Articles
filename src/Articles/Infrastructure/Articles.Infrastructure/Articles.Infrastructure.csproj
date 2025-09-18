@@ -10,6 +10,7 @@
       <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0-preview.7.25380.108" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.4-beta1" />
+      <PackageReference Include="System.Text.Json" Version="10.0.0-rc.1.25451.107" />
     </ItemGroup>
 
     <ItemGroup>

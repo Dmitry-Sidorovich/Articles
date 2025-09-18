@@ -11,45 +11,46 @@ namespace Articles.Hosts.Api.Controllers;
 public class ArticlesController : ControllerBase
 {
     private readonly IArticleService _articleService;
-
+    
     public ArticlesController(IArticleService articleService)
     {
         _articleService = articleService;
     }
     
+    /// <summary>
+    /// List of articles by filter (pagination/sorting in query)
+    /// </summary>
+    /// <param name="filter">filter</param>
+    /// <returns>articles dto</returns>
     [HttpGet("by-filter")]
     [ProducesResponseType(typeof(IReadOnlyCollection<ArticleDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetArticlesByFilter([FromQuery] ArticleFilterDto filter)
+    public async Task<ActionResult<IReadOnlyCollection<ArticleDto>>> GetArticlesByFilter([FromQuery] ArticleFilterDto filter)
     {
         //throw new ValidationException("Invalid filter provided"); - для проверки middleware
         var articles = await _articleService.GetByFilterAsync(filter);
-        if (articles.Count == 0)
-        {
-            return NotFound();
-        }
-        
         return Ok(articles);
     }
 
+    /// <summary>
+    /// Get article by id
+    /// </summary>
+    /// <param name="id">article's id</param>
+    /// <returns>article dto</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(ArticleDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetArticleById(Guid id)
+    public async Task<ActionResult<ArticleDto>> GetArticleById(Guid id)
     {
         var article = await _articleService.GetByIdAsync(id);
-        if (article == null)
-        {
-            return NotFound();
-        }
-        
-        return Ok(article);
+        return article is null ? NotFound() : Ok(article);
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(IReadOnlyCollection<ArticleDto>), StatusCodes.Status201Created)]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(ArticleDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateArticle(CreateArticleDto article)
+    public async Task<ActionResult<ArticleDto>> CreateArticle(CreateArticleDto article)
     {
         var articleDto = await _articleService.CreateAsync(article);
         if (articleDto == null)
@@ -62,32 +63,23 @@ public class ArticlesController : ControllerBase
     }
     
     [HttpPut("{id:guid}")]
-    [ProducesResponseType(typeof(IReadOnlyCollection<ArticleDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateArticle(Guid id, UpdateArticleDto article)
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(ArticleDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ArticleDto>> UpdateArticle([FromRoute] Guid id, [FromBody] UpdateArticleDto article)
     {
         var articleDto = await _articleService.UpdateAsync(id, article);
-        if (articleDto == null)
-        {
-            return BadRequest();
-        }
         
-        
-        return Ok(articleDto);
+        return articleDto is null ? NotFound() : Ok(articleDto);
     }
     
     [HttpDelete("{id:guid}")]
-    [ProducesResponseType(typeof(IReadOnlyCollection<ArticleDto>), StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteArticle(Guid id)
     {
         var articleDto = await _articleService.DeleteAsync(id);
-        if (articleDto == false) // ???
-        {
-            return BadRequest();
-        }
-        
-        
-        return NoContent();
+        return articleDto ? NoContent() : NotFound();
     }
 }

@@ -5,16 +5,29 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.RegisterAppServices();
 builder.Services.RegisterRepositories();
+
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(o =>
+{
+    var xml = Path.ChangeExtension(typeof(Program).Assembly.Location, "xml");
+    if (File.Exists(xml))
+        o.IncludeXmlComments(xml, includeControllerXmlComments: true);
+    
+    var contractsXml = Path.Combine(AppContext.BaseDirectory, "Articles.Contracts.xml");
+    if (File.Exists(contractsXml))
+        o.IncludeXmlComments(contractsXml);
+});
+
+// builder.Services.AddAuthentication("Bearer").AddJwtBearer(...); Добавление схемы аутентификации 
+// builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
 // {
@@ -22,7 +35,8 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
     app.UseSwaggerUI();
 // }
 
-app.UseAuthentication();
+// app.UseAuthentication(); использование схемы аутентификации 
+// app.UseAuthorization();
 
 app.MapControllers();
 

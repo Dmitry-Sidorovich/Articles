@@ -7,6 +7,10 @@ public class ArticleService : IArticleService
 {
     private readonly IArticleRepository _articleRepository;
 
+    /// <summary>
+    /// ,,,
+    /// </summary>
+    /// <param name="articleRepository"></param>
     public ArticleService(IArticleRepository articleRepository)
     {
         _articleRepository = articleRepository;
@@ -17,7 +21,7 @@ public class ArticleService : IArticleService
         throw new NotImplementedException();
     }
 
-    public Task<ArticleDto> GetByIdAsync(Guid id)
+    public Task<ArticleDto?> GetByIdAsync(Guid id)
     {
         throw new NotImplementedException();
     }
@@ -27,7 +31,7 @@ public class ArticleService : IArticleService
         throw new NotImplementedException();
     }
 
-    public Task<ArticleDto> UpdateAsync(Guid id, UpdateArticleDto article)
+    public Task<ArticleDto?> UpdateAsync(Guid id, UpdateArticleDto article)
     {
         throw new NotImplementedException();
     }

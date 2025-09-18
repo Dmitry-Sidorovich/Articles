@@ -2,6 +2,9 @@
 
 public class ArticleDto
 {
+    /// <summary>
+    /// Guid id.
+    /// </summary>
     public Guid Id { get; set; }
     
     public string Title { get; set; }

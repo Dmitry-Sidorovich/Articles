@@ -36,7 +36,7 @@ public class ExceptionHandlingMiddleware
 
         var response = new ErrorDto
         {
-            StatusCodes = context.Response.StatusCode,
+            StatusCode = context.Response.StatusCode,
             Message = "Что-то пошло не так. Попробуйте позже.",
             TraceId = context.TraceIdentifier,
         };
