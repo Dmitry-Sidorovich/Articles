@@ -6,7 +6,7 @@ public class CreateArticleDto
     
     public string Description { get; set; }
     
-    // public DateTime CreatedAt { get; set; } сервер сам ставит, на входе не нужны, клиент их не передает?
+    public DateTime CreatedAt { get; set; } // сервер сам ставит, на входе не нужны, клиент их не передает?
     //
-    // public string UserName { get; set; }
+    public string UserName { get; set; }
 }
