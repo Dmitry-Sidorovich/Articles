@@ -1,22 +1,29 @@
 ﻿services:
-  articles.hosts.api:
-    image: articles.hosts.api
-    build:
-      context: .
-      dockerfile: src/Articles/Hosts/Articles.Hosts.Api/Dockerfile
-      
-#postgres:
-#  image: postgres:17
-#  environment:
-#    POSTGRES_USER: postgres
-#    POSTGRES_PASSWORD: password
-#    PGDATA: /data/postgres
-#  volumes:
-#    - postgres_data:/data/postgres
+#  articles.hosts.api:
+#    image: articles.hosts.api
+#    build:
+#      context: .
+#      dockerfile: src/Articles/Hosts/Articles.Hosts.Api/Dockerfile
 #    ports:
-#     - "5432:5432"
-#  networks:
-#    - articles
-#
-#volumes:
-#  postgres_da t a:
+#       - "5432:5432"
+#    networks:
+#      articles-network:
+  
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+      - postgres_data:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+    - articles-network
+
+volumes:
+  postgres_data:
+
+networks:
+  articles-network:

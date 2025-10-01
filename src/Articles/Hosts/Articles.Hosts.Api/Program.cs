@@ -1,10 +1,14 @@
 using Articles.Infrastructure.ComponentRegistrar;
+using Articles.Infrastructure.DataAccess;
 using Articles.Infrastructure.Middlewares;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.RegisterAppServices();
 builder.Services.RegisterRepositories();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("AcademyDb"));
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -33,6 +37,12 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 // {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await context.Database.EnsureCreatedAsync();
+    }
 // }
 
 // app.UseAuthentication(); использование схемы аутентификации 
