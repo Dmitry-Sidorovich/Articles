@@ -2,6 +2,7 @@
 using Articles.AppServices.Contexts.Articles.Repository;
 using Articles.AppServices.Contexts.Articles.Services;
 using Articles.Infrastructure.DataAccess.Contexts.Articles.Repositories;
+using Articles.Infrastructure.DataAccess.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Articles.Infrastructure.ComponentRegistrar;
@@ -19,6 +20,7 @@ public static class ComponentRegistrar
     {
         services.AddTransient<IArticlePredicateBuilder, ArticlePredicateBuilder>();
         services.AddScoped<IArticleRepository, ArticleRepository>(); // scoped or singleton ?
+        services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
         
         return services;
     }

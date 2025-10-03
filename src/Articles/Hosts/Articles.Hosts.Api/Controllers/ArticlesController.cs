@@ -1,4 +1,5 @@
-﻿using Articles.AppServices.Contexts.Articles.Services;
+﻿using System.Net;
+using Articles.AppServices.Contexts.Articles.Services;
 using Articles.Contracts.Articles;
 using Articles.Contracts.Errors;
 using Microsoft.AspNetCore.Mvc;
@@ -48,18 +49,11 @@ public class ArticlesController : ControllerBase
     [HttpPost]
     [Consumes("application/json")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(ArticleDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ArticleDto>> CreateArticle(CreateArticleDto article)
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    public async Task<ActionResult> CreateArticle(CreateArticleDto article)
     {
-        var articleDto = await _articleService.CreateAsync(article);
-        if (articleDto == null)
-        {
-            return BadRequest();
-        }
-        
-        
-        return CreatedAtAction(nameof(GetArticleById), new { id = articleDto.Id }, articleDto);
+        var id = await _articleService.CreateAsync(article);
+        return StatusCode((int)HttpStatusCode.Created, id);
     }
     
     [HttpPut("{id:guid}")]
@@ -79,7 +73,7 @@ public class ArticlesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteArticle(Guid id)
     {
-        var articleDto = await _articleService.DeleteAsync(id);
-        return articleDto ? NoContent() : NotFound();
+        await _articleService.DeleteAsync(id);
+        return NoContent();
     }
 }
