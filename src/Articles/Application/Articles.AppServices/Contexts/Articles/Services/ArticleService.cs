@@ -2,6 +2,7 @@
 using Articles.AppServices.Contexts.Articles.Repository;
 using Articles.Contracts.Articles;
 using Articles.Domain.Entities;
+using AutoMapper;
 
 namespace Articles.AppServices.Contexts.Articles.Services;
 
@@ -9,15 +10,17 @@ public class ArticleService : IArticleService
 {
     private readonly IArticleRepository _articleRepository;
     private readonly IArticlePredicateBuilder _predicateBuilder;
+    private readonly IMapper _mapper;
 
     /// <summary>
     /// ,
     /// </summary>
     /// <param name="articleRepository"></param>
-    public ArticleService(IArticleRepository articleRepository, IArticlePredicateBuilder predicateBuilder)
+    public ArticleService(IArticleRepository articleRepository, IArticlePredicateBuilder predicateBuilder, IMapper mapper)
     {
         _articleRepository = articleRepository;
         _predicateBuilder = predicateBuilder;
+        _mapper = mapper;
     }
     
     public Task<IReadOnlyCollection<ArticleDto>> GetByFilterAsync(ArticleFilterDto filter)
@@ -33,17 +36,7 @@ public class ArticleService : IArticleService
 
     public Task<Guid> CreateAsync(CreateArticleDto article)
     {
-        var entity = new Article
-        {
-            CreatedAt = article.CreatedAt,
-            Description = article.Description,
-            Title = article.Title,
-            User = new User
-            {
-                CreatedAt = article.CreatedAt,
-                Name = article.UserName,
-            }
-        };
+        var entity = _mapper.Map<CreateArticleDto, Article>(article);
         return _articleRepository.AddAsync(entity);
     }
 
