@@ -1,52 +1,68 @@
 ﻿using Articles.AppServices.Contexts.Articles.Builder;
 using Articles.AppServices.Contexts.Articles.Repository;
+using Articles.AppServices.Contexts.Articles.Specification;
+using Articles.AppServices.Specification;
 using Articles.Contracts.Articles;
+using Articles.Contracts.Base;
 using Articles.Domain.Entities;
 using AutoMapper;
 
 namespace Articles.AppServices.Contexts.Articles.Services;
 
-public class ArticleService : IArticleService
+/// <inheritdoc />
+public class ArticleService(
+    IArticleRepository articleRepository,
+    IArticlePredicateBuilder predicateBuilder,
+    IMapper mapper)
+    : IArticleService
 {
-    private readonly IArticleRepository _articleRepository;
-    private readonly IArticlePredicateBuilder _predicateBuilder;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// ,
-    /// </summary>
-    /// <param name="articleRepository"></param>
-    public ArticleService(IArticleRepository articleRepository, IArticlePredicateBuilder predicateBuilder, IMapper mapper)
+    /// <inheritdoc />
+    public Task<PaginationCollection<ArticleDto>> GetByFilterAsync(ArticleFilterDto filter)
     {
-        _articleRepository = articleRepository;
-        _predicateBuilder = predicateBuilder;
-        _mapper = mapper;
+        //return articleRepository.GetByFilterAsync(filter);
+        Specification<Article> specification = Specification<Article>.True;
+
+        if (filter.Title is not null)
+        {
+            specification = specification.And(new ArticleTitleSpecification(filter.Title));
+        }
+
+        if (filter.UserName is not null)
+        {
+            specification = specification.And(new ArticleUserNameSpecification(filter.UserName));
+        }
+        
+        return articleRepository.FindAsync(specification, filter.Page, filter.Take);
     }
     
-    public Task<IReadOnlyCollection<ArticleDto>> GetByFilterAsync(ArticleFilterDto filter)
-    {
-        var query = _predicateBuilder.WithUsers().OrderByTitle().Build(); // пример применения строителя. 
-        return _articleRepository.GetByFilterAsync(filter);
-    }
-
+    /// <inheritdoc />
     public Task<ArticleDto?> GetByIdAsync(Guid id)
     {
-        return _articleRepository.GetByIdAsync(id);
+        return articleRepository.GetByIdAsync(id);
     }
 
+    /// <inheritdoc />
     public Task<Guid> CreateAsync(CreateArticleDto article)
     {
-        var entity = _mapper.Map<CreateArticleDto, Article>(article);
-        return _articleRepository.AddAsync(entity);
+        var entity = mapper.Map<CreateArticleDto, Article>(article);
+        return articleRepository.AddAsync(entity);
     }
 
+    /// <inheritdoc />
+    public Task<ArticleDto> UpdateAsync(Guid id, CreateArticleDto request)
+    {
+        return articleRepository.UpdateAsync(id, request);
+    }
+
+    /// <inheritdoc />
     public Task<ArticleDto?> UpdateAsync(Guid id, UpdateArticleDto article)
     {
-        return _articleRepository.UpdateAsync(id, article);
+        return articleRepository.UpdateAsync(id, article);
     }
 
+    /// <inheritdoc />
     public Task DeleteAsync(Guid id)
     {
-        return _articleRepository.DeleteAsync(id);
+        return articleRepository.DeleteAsync(id);
     }
 }

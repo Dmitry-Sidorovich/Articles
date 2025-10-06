@@ -12,7 +12,6 @@ public class Program
         }).Build();
 
         await MigrateAsync(host.Services);
-        await host.RunAsync();
     }
 
     private static async Task MigrateAsync(IServiceProvider serviceProvider)

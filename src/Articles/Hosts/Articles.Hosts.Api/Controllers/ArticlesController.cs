@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Articles.Hosts.Api.Controllers;
 
+/// <summary>
+/// Контроллер для работы со статьями.
+/// </summary>
+/// <param name="articleService"></param>
 [ApiController]
 [Route("api/[controller]")]
 [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status500InternalServerError)]
@@ -29,6 +33,10 @@ public class ArticlesController : ControllerBase
     {
         //throw new ValidationException("Invalid filter provided"); - для проверки middleware
         var articles = await _articleService.GetByFilterAsync(filter);
+        if (articles.Items.Count == 0)
+        {
+            return NotFound();
+        }
         return Ok(articles);
     }
 
@@ -46,6 +54,11 @@ public class ArticlesController : ControllerBase
         return article is null ? NotFound() : Ok(article);
     }
 
+    /// <summary>
+    /// Создаёт статью по модели.
+    /// </summary>
+    /// <param name="article">Модель создания статьи.</param>
+    /// <returns>Идентификатор созданной статьи.</returns>
     [HttpPost]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -53,21 +66,30 @@ public class ArticlesController : ControllerBase
     public async Task<ActionResult> CreateArticle(CreateArticleDto article)
     {
         var id = await _articleService.CreateAsync(article);
-        return StatusCode((int)HttpStatusCode.Created, id);
+        return CreatedAtAction(nameof(GetArticleById), id.ToString());
     }
     
+    /// <summary>
+    /// Обновляет статью по модели.
+    /// </summary>
+    /// <param name="id">Идентификатор существующей статьи.</param>
+    /// <param name="request">Модель обновления.</param>
+    /// <returns>Модель обновлённой статьи.</returns>
     [HttpPut("{id:guid}")]
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(ArticleDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ArticleDto>> UpdateArticle([FromRoute] Guid id, [FromBody] UpdateArticleDto article)
+    public async Task<ActionResult<ArticleDto>> UpdateArticle([FromRoute] Guid id, [FromBody] UpdateArticleDto request)
     {
-        var articleDto = await _articleService.UpdateAsync(id, article);
-        
-        return articleDto is null ? NotFound() : Ok(articleDto);
+        var articleDto = await _articleService.UpdateAsync(id, request);
+        return Ok(articleDto);
     }
     
+    /// <summary>
+    /// Удаляет статью.
+    /// </summary>
+    /// <param name="id">Идентификатор статьи.</param>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
