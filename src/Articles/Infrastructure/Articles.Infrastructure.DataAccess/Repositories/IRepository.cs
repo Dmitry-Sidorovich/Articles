@@ -19,7 +19,7 @@ public interface IRepository<TEntity, TContext> where TEntity : class where TCon
     /// Добавить сущность.
     /// </summary>
     /// <param name="entity">Сущность.</param>
-    Task AddAsync(TEntity entity);
+    Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Удалить сущность.

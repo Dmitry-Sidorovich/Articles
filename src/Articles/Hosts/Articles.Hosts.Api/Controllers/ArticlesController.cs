@@ -66,7 +66,7 @@ public class ArticlesController : ControllerBase
     public async Task<ActionResult> CreateArticle(CreateArticleDto article)
     {
         var id = await _articleService.CreateAsync(article);
-        return CreatedAtAction(nameof(GetArticleById), id.ToString());
+        return StatusCode(StatusCodes.Status201Created, id);
     }
     
     /// <summary>

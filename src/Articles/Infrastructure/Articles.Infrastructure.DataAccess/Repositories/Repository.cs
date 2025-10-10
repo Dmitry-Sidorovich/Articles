@@ -24,10 +24,10 @@ public class Repository<TEntity, TContext> :IRepository<TEntity, TContext> where
     }
 
     /// <inheritdoc />
-    public async Task AddAsync(TEntity entity)
+    public async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        await DbSet.AddAsync(entity);
-        await DbContext.SaveChangesAsync();
+        await DbSet.AddAsync(entity, cancellationToken);
+        await DbContext.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />

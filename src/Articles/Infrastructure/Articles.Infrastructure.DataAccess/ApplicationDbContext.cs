@@ -1,5 +1,6 @@
 ﻿using Articles.Domain.Entities;
 using Articles.Infrastructure.DataAccess.Contexts.Articles.Configurations;
+using Articles.Infrastructure.DataAccess.Contexts.Files.Configurations;
 using Articles.Infrastructure.DataAccess.Contexts.Users.Configurations;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,5 +21,6 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new ArticleConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new FileConfiguration());
     }
 }
