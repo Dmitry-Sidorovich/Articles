@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Articles.AppServices.Contexts.Articles.Repository;
+using Articles.AppServices.Exceptions;
 using Articles.AppServices.Specification;
 using Articles.Contracts.Articles;
 using Articles.Contracts.Base;
@@ -70,12 +71,19 @@ public class ArticleRepository(ILogger<ArticleRepository> logger, IRepository<Ar
     }
 
     /// <inheritdoc />
-    public Task<ArticleDto> GetByIdAsync(Guid id)
+    public async Task<ArticleDto> GetByIdAsync(Guid id)
     {
-        return repository.GetAll().Where(s => s.Id == id)
+        var result = await repository.GetAll().Where(s => s.Id == id)
             .Include(s => s.User)
             .ProjectTo<ArticleDto>(mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
+
+        if (result is null)
+        {
+            throw new NotFoundException(id.ToString());
+        }
+
+        return result;
             // .Select(s => new ArticleDto
             // {
             //     Id = s.Id,
@@ -107,7 +115,7 @@ public class ArticleRepository(ILogger<ArticleRepository> logger, IRepository<Ar
 
         await repository.UpdateAsync(updatedArticle);
         return await GetByIdAsync(id) 
-               ?? throw new ApplicationException($"Something went wrong. Updated article not found. Id: {id}");
+               ?? throw new NotFoundException(id.ToString());
     }
     
     /// <inheritdoc />
